@@ -1,0 +1,11 @@
+# Uploaded PDF files
+uploads/
+*.pdf
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/

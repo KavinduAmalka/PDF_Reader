@@ -1,0 +1,13 @@
+{
+    "name": "local/pdf-reader",
+    "description": "A PHP PDF Reader with SRS document parsing capabilities",
+    "require": {
+        "php": ">=7.4",
+        "smalot/pdfparser": "^2.12"
+    },
+    "autoload": {
+        "classmap": [
+            "classes/"
+        ]
+    }
+}

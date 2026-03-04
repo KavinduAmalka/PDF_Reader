@@ -18,13 +18,37 @@ class SRSParser {
      * Parse the SRS document and extract all sections
      */
     public function parse() {
-        $this->sections = [
-            'header' => $this->extractHeader(),
-            'introduction' => $this->extractSection('1\.\s*Introduction', '2\.\s*Functional Requirements'),
-            'functional_requirements' => $this->extractSection('2\.\s*Functional Requirements', '3\.\s*Non-Functional Requirements'),
-            'non_functional_requirements' => $this->extractSection('3\.\s*Non-Functional Requirements', null),
-            'subsections' => $this->extractSubsections()
-        ];
+        // Detect section numbering format
+        $hasFunctionalAt2 = preg_match('/\b2\.\s*Functional Requirements/i', $this->text);
+        $hasFunctionalAt3 = preg_match('/\b3\.\s*Functional Requirements/i', $this->text);
+        
+        if ($hasFunctionalAt3) {
+            // IEEE 830 format with "2. Overall Description" section
+            $header = $this->extractHeader();
+            
+            // Extract "2. Overall Description" and add to header
+            $overallDesc = $this->extractSection('2\.\s*Overall Description', '3\.');
+            if (!empty($overallDesc)) {
+                $header['overall_description'] = $overallDesc;
+            }
+            
+            $this->sections = [
+                'header' => $header,
+                'introduction' => $this->extractSection('1\.\s*Introduction', '2\.'),
+                'functional_requirements' => $this->extractSection('3\.\s*Functional Requirements', '4\.\s*Non-Functional Requirements'),
+                'non_functional_requirements' => $this->extractSection('4\.\s*Non-Functional Requirements', null),
+                'subsections' => $this->extractSubsections()
+            ];
+        } else {
+            // Standard format without "Overall Description"
+            $this->sections = [
+                'header' => $this->extractHeader(),
+                'introduction' => $this->extractSection('1\.\s*Introduction', '2\.\s*Functional Requirements'),
+                'functional_requirements' => $this->extractSection('2\.\s*Functional Requirements', '3\.\s*Non-Functional Requirements'),
+                'non_functional_requirements' => $this->extractSection('3\.\s*Non-Functional Requirements', null),
+                'subsections' => $this->extractSubsections()
+            ];
+        }
         
         return $this->sections;
     }
@@ -135,17 +159,43 @@ class SRSParser {
         ];
         
         // Extract Functional Requirements subsections (FR-01, FR-02, FR-07, FR-08, etc.)
-        // Pattern 1: "2.1 Module Name (FR-XX)"
+        
+        // Pattern 1: "2.X Module Name (FR-XX)" format (2-level numbering)
         preg_match_all('/^(?:●\s*)?(?:2\.\d+)\s+(.+?)\s*\((FR-\d+)\)/m', $this->text, $frMatches, PREG_SET_ORDER);
         
-        // Pattern 2: "FR-XX: Description" or "FR-XX.YY: Description"  
-        if (empty($frMatches)) {
-            preg_match_all('/^(?:●\s*)?(FR-\d+):\s*(.+?)$/m', $this->text, $altMatches, PREG_SET_ORDER);
-            foreach ($altMatches as $match) {
+        // Pattern 1b: "3.X.Y Module Name (FR-XX)" format (3-level numbering - IEEE standard)
+        preg_match_all('/^(?:●\s*)?(?:3\.\d+\.\d+)\s+(.+?)\s*\((FR-\d+)\)/m', $this->text, $frMatches3Level, PREG_SET_ORDER);
+        
+        // Merge both patterns
+        $frMatches = array_merge($frMatches, $frMatches3Level);
+        
+        // Pattern 2: "FR-XX: Module/Title" format (standalone, not a sub-requirement)
+        // Only match FR-XX: (not FR-XX.YY:) to avoid matching sub-requirements
+        preg_match_all('/^(?:●\s*)?(FR-\d+):\s*(.+?)$/m', $this->text, $altMatches, PREG_SET_ORDER);
+        
+        // Merge Pattern 2 (but avoid duplicates)
+        foreach ($altMatches as $match) {
+            $frCode = $match[1]; // FR-08
+            $frTitle = trim($match[2]);
+            
+            // Only add if it's not already in frMatches
+            $alreadyExists = false;
+            foreach ($frMatches as $existing) {
+                if ($existing[2] === $frCode) {
+                    $alreadyExists = true;
+                    break;
+                }
+            }
+            
+            if (!$alreadyExists) {
+                // Clean up the title
+                $frTitle = preg_replace('/^[●○■▪•]\s*/', '', $frTitle);
+                $frTitle = preg_replace('/[\s\x{200B}\x{FEFF}]*[●○■▪•][\s\x{200B}\x{FEFF}]*$/u', '', $frTitle);
+                
                 $frMatches[] = [
                     0 => $match[0],
-                    1 => $match[2],
-                    2 => $match[1]
+                    1 => $frTitle,
+                    2 => $frCode
                 ];
             }
         }
@@ -190,6 +240,25 @@ class SRSParser {
             ];
         }
         
+        // Sort functional requirements by FR number (FR-01, FR-02, ..., FR-08, FR-09, etc.)
+        uksort($subsections['functional'], function($a, $b) {
+            // Extract numbers from FR-XX
+            preg_match('/FR-(\d+)/', $a, $matchA);
+            preg_match('/FR-(\d+)/', $b, $matchB);
+            $numA = isset($matchA[1]) ? (int)$matchA[1] : 0;
+            $numB = isset($matchB[1]) ? (int)$matchB[1] : 0;
+            return $numA - $numB;
+        });
+        
+        // Sort non-functional requirements by NFR number (NFR-01, NFR-02, etc.)
+        uksort($subsections['non_functional'], function($a, $b) {
+            preg_match('/NFR-(\d+)/', $a, $matchA);
+            preg_match('/NFR-(\d+)/', $b, $matchB);
+            $numA = isset($matchA[1]) ? (int)$matchA[1] : 0;
+            $numB = isset($matchB[1]) ? (int)$matchB[1] : 0;
+            return $numA - $numB;
+        });
+        
         return $subsections;
     }
     
@@ -200,10 +269,11 @@ class SRSParser {
         $content = [];
         $processedCodes = [];
         
-        // Pattern to find FR-XX.YY items with their full content including nested lists
-        // Updated to better detect section headers (2.2, 2.3, 3., etc.) that end subsections
-        // Stops at: next FR subsection, FR/NFR module header, OR section/subsection headers (2.2, 3.)
-        $pattern = '/(?:●\s*)?(' . preg_quote($code, '/') . '\.\d+):\s*(.+?)(?=(?:●\s*)?' . preg_quote($code, '/') . '\.\d+:|(?:●\s*)?(?:FR-\d+|NFR-\d+)|\n\s*\d+\.\d+\s|\n\s*\d+\.\s+[A-Z]|\Z)/s';
+        // Pattern to find FR-XX.YY items with their full content
+        // IMPORTANT: Stop at next FR module header (FR-XX:) but NOT at sub-requirements (FR-XX.YY:)
+        // Uses negative lookahead (?!\.) to ensure FR-\d+ is not followed by a dot
+        // Also stops at section headers like "3.1.2 Module Name (FR-XX)"
+        $pattern = '/(?:●\s*)?(' . preg_quote($code, '/') . '\.\d+):\s*(.+?)(?=(?:●\s*)?' . preg_quote($code, '/') . '\.\d+:|(?:●\s*)?(?:FR-\d+(?!\.)\s*:|NFR-\d+)|(?:●\s*)?\d+\.\d+\.\d+\s+[A-Z]|(?:●\s*)?\d+\.\d+\s+[A-Z]|\n\s*\d+\.\s+[A-Z]|\Z)/s';
         
         if (preg_match_all($pattern, $this->text, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
@@ -315,6 +385,11 @@ class SRSParser {
                 $description = preg_replace('/\s+/', ' ', $description ?? '');
                 $description = trim($description ?? '');
                 
+                // Check for duplicates before adding
+                if (in_array($subCode, $processedCodes)) {
+                    continue; // Skip duplicate
+                }
+                
                 if (!empty($description) || !empty($nestedItems)) {
                     $item = [
                         'code' => $subCode,
@@ -332,6 +407,16 @@ class SRSParser {
                 }
             }
         }
+        
+        // Sort content by sub-requirement number (FR-08.01, FR-08.02, etc.)
+        usort($content, function($a, $b) {
+            // Extract the sub-number from FR-XX.YY
+            preg_match('/FR-\d+\.(\d+)/', $a['code'], $matchA);
+            preg_match('/FR-\d+\.(\d+)/', $b['code'], $matchB);
+            $numA = isset($matchA[1]) ? (int)$matchA[1] : 0;
+            $numB = isset($matchB[1]) ? (int)$matchB[1] : 0;
+            return $numA - $numB;
+        });
         
         return $content;
     }

@@ -843,6 +843,17 @@ $debugMode = isset($_GET['debug']) && $_GET['debug'] === '1';
                             <p style="color: #999;">No introduction content found.</p>
                         <?php endif; ?>
                     </div>
+                    
+                    <?php if (!empty($sections['header']['overall_description'])): ?>
+                        <div class="section-block">
+                            <h3>2. Overall Description</h3>
+                            <?php foreach ($sections['header']['overall_description'] as $line): ?>
+                                <?php if (!empty(trim($line))): ?>
+                                    <div class="line"><?php echo htmlspecialchars($line); ?></div>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 <?php endif; ?>
 
                 <?php if ($selectedSection === 'all' || $selectedSection === 'functional'): ?>
@@ -863,7 +874,7 @@ $debugMode = isset($_GET['debug']) && $_GET['debug'] === '1';
                                                     <div>
                                                         <strong style="color: #764ba2;"><?php echo htmlspecialchars($item['code']); ?>:</strong>
                                                         <?php echo htmlspecialchars($item['description']); ?>
-                                                        <button class="analyze-btn" onclick="analyzeSVO('<?php echo htmlspecialchars($item['code']); ?>', this)" data-text="<?php echo htmlspecialchars($item['description']); ?>">
+                                                        <button class="analyze-btn" onclick="analyzeSVO('<?php echo htmlspecialchars($item['code']); ?>', this)" data-text="<?php echo htmlspecialchars($item['description']); ?>" data-original-text="🔍 Analyze SVO">
                                                             🔍 Analyze SVO
                                                         </button>
                                                     </div>
@@ -886,7 +897,7 @@ $debugMode = isset($_GET['debug']) && $_GET['debug'] === '1';
                                                                     <span style="color: #9fa8da; font-weight: 600;"><?php echo ($idx + 1); ?>.</span>
                                                                 <?php endif; ?>
                                                                 <?php echo htmlspecialchars($nestedItem); ?>
-                                                                <button class="analyze-btn sub-analyze" onclick="analyzeSVO('<?php echo htmlspecialchars($nestedCode); ?>', this)" data-text="<?php echo htmlspecialchars($nestedItem); ?>" title="Analyze this sub-requirement">
+                                                                <button class="analyze-btn sub-analyze" onclick="analyzeSVO('<?php echo htmlspecialchars($nestedCode); ?>', this)" data-text="<?php echo htmlspecialchars($nestedItem); ?>" data-original-text="🔍 Analyze" title="Analyze this sub-requirement">
                                                                     🔍 Analyze
                                                                 </button>
                                                             </div>
@@ -960,9 +971,9 @@ $debugMode = isset($_GET['debug']) && $_GET['debug'] === '1';
             if (currentlyOpenAnalysis === requirementCode) {
                 analysisDiv.classList.remove('show');
                 currentlyOpenAnalysis = null;
-                // Set correct button text based on button type
-                const buttonText = buttonElement.classList.contains('sub-analyze') ? '🔍 Analyze' : '🔍 Analyze SVO';
-                buttonElement.innerHTML = buttonText;
+                // Restore original button text
+                const originalText = buttonElement.getAttribute('data-original-text') || '🔍 Analyze';
+                buttonElement.innerHTML = originalText;
                 return;
             }
             
@@ -976,9 +987,9 @@ $debugMode = isset($_GET['debug']) && $_GET['debug'] === '1';
                 const prevButtons = document.querySelectorAll('.analyze-btn');
                 prevButtons.forEach(btn => {
                     if (btn.innerHTML.includes('Hide')) {
-                        // Set correct button text based on button type
-                        const buttonText = btn.classList.contains('sub-analyze') ? '🔍 Analyze' : '🔍 Analyze SVO';
-                        btn.innerHTML = buttonText;
+                        // Restore original button text
+                        const originalText = btn.getAttribute('data-original-text') || '🔍 Analyze';
+                        btn.innerHTML = originalText;
                     }
                 });
             }
@@ -1023,8 +1034,8 @@ $debugMode = isset($_GET['debug']) && $_GET['debug'] === '1';
                             ${result.config_needed ? '<br><br><small>Please add your OpenAI API key in <strong>config.php</strong></small>' : ''}
                         </div>
                     `;
-                    const buttonText = buttonElement.classList.contains('sub-analyze') ? '🔍 Analyze' : '🔍 Analyze SVO';
-                    buttonElement.innerHTML = buttonText;
+                    const originalText = buttonElement.getAttribute('data-original-text') || '🔍 Analyze';
+                    buttonElement.innerHTML = originalText;
                 }
                 
             } catch (error) {
@@ -1034,8 +1045,8 @@ $debugMode = isset($_GET['debug']) && $_GET['debug'] === '1';
                         ${escapeHtml(error.message)}
                     </div>
                 `;
-                const buttonText = buttonElement.classList.contains('sub-analyze') ? '🔍 Analyze' : '🔍 Analyze SVO';
-                buttonElement.innerHTML = buttonText;
+                const originalText = buttonElement.getAttribute('data-original-text') || '🔍 Analyze';
+                buttonElement.innerHTML = originalText;
             } finally {
                 buttonElement.disabled = false;
             }
@@ -1182,12 +1193,13 @@ $debugMode = isset($_GET['debug']) && $_GET['debug'] === '1';
                 analysisDiv.classList.remove('show');
             }
             
-            // Reset button text
+            // Reset button text to original
             const buttons = document.querySelectorAll('.analyze-btn');
             buttons.forEach(btn => {
                 const btnCode = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
                 if (btnCode === code) {
-                    btn.innerHTML = '🔍 Analyze SVO';
+                    const originalText = btn.getAttribute('data-original-text') || '🔍 Analyze';
+                    btn.innerHTML = originalText;
                 }
             });
             

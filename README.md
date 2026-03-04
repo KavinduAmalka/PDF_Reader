@@ -78,11 +78,12 @@ PDF_Reader/
 ├── sections.php                 # SRS sections viewer with SVO analysis
 ├── serve_pdf.php               # PDF serving endpoint
 ├── analyze_requirement.php     # AJAX endpoint for SVO analysis (NEW)
-├── config.php                  # API configuration (NEW)
+├── config.php                  # API configuration (reads from .env)
+├── .env                        # Environment variables (API keys) - NOT in Git
+├── .env.example                # Environment template
 ├── composer.json               # Composer dependencies
 ├── README.md                   # This file
-├── SVO_SETUP.md               # SVO Analysis setup guide (NEW)
-└── SVO_SETUP_SINHALA.md       # SVO setup guide in Sinhala (NEW)
+└── SVO_SETUP.md               # SVO Analysis setup guide
 ```
 
 ## Usage
@@ -134,11 +135,12 @@ Analyze functional requirements using Google Gemini AI (100% FREE) to extract Su
 - ✅ Beautiful, intuitive UI
 - ✅ **100% FREE** - No charges, no credit card needed!
 
-**Setup Required:** Get a free Gemini API key at [Google AI Studio](https://makersuite.google.com/app/apikey)
+**Setup Required:** 
+1. Copy `.env.example` to `.env`
+2. Get a free Gemini API key at [Google AI Studio](https://makersuite.google.com/app/apikey)
+3. Add your API key to `.env` file
 
-For detailed setup instructions:
-- English: [SVO_SETUP.md](SVO_SETUP.md)
-- Sinhala: [SVO_SETUP_SINHALA.md](SVO_SETUP_SINHALA.md)
+For detailed setup instructions, see [SVO_SETUP.md](SVO_SETUP.md)
 
 ## SRS Document Template
 

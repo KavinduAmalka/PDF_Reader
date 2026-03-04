@@ -1,3 +1,7 @@
+# Vendor and Dependencies
+vendor/
+composer.lock
+
 # Uploaded PDF files
 uploads/
 *.pdf
@@ -9,3 +13,6 @@ Thumbs.db
 # IDE files
 .vscode/
 .idea/
+
+# Environment Variables (contains sensitive API keys)
+.env

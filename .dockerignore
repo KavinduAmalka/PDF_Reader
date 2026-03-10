@@ -1,0 +1,38 @@
+# Git files
+.git
+.gitignore
+
+# Documentation
+*.md
+README.md
+QUICK_START.md
+GEMINI_MIGRATION.md
+SSL_FIX.md
+SVO_SETUP.md
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Environment files (will be mounted separately)
+.env
+.env.example
+
+# Vendor directory (will be installed via composer in Docker)
+vendor/
+
+# Uploaded files (will be mounted as volume)
+uploads/*
+!uploads/index.php
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

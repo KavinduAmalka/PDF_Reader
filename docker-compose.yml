@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  pdf-reader:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pdf-reader-app
+    ports:
+      - "8080:80"
+    volumes:
+      # Mount uploads directory for persistent storage
+      - ./uploads:/var/www/html/uploads
+      # Mount .env file for configuration
+      - ./.env:/var/www/html/.env:ro
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+    restart: unless-stopped
+    networks:
+      - pdf-reader-network
+
+networks:
+  pdf-reader-network:
+    driver: bridge

@@ -557,6 +557,14 @@ $debugMode = isset($_GET['debug']) && $_GET['debug'] === '1';
             border-radius: 5px;
             font-size: 13px;
             border: 1px solid #ddd;
+            cursor: help;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        
+        .compliance-check:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
         .compliance-check.check-pass {
@@ -1110,12 +1118,27 @@ $debugMode = isset($_GET['debug']) && $_GET['debug'] === '1';
                     'has_quantifiable_measures': 'Has Quantifiable Measures'
                 };
                 
+                const checkTooltips = {
+                    'has_modal_verb': 'Contains modal verbs like shall, should, may, must, will, can',
+                    'correct_modal_verb': 'Uses IEEE-preferred modal verbs: shall (mandatory), should (recommended), may (optional)',
+                    'is_clear': 'Requirement is clear with well-defined subject, verb, and object',
+                    'is_testable': 'Can be tested or verified through observation/measurement',
+                    'is_single_requirement': 'Expresses only one requirement (not multiple combined with and/or)',
+                    'is_unambiguous': 'Has only one clear interpretation, not open to multiple meanings',
+                    'has_quantifiable_measures': 'Contains specific measurable criteria: numbers (10MB, 5 items), time limits (3 seconds), formats (PDF), ranges (1-100), percentages (95%), or physical measurements (1920x1080)'
+                };
+                
                 for (const [key, label] of Object.entries(checkLabels)) {
                     // Handle both boolean and numeric values (PHP may send 1/0 or true/false)
                     const passed = checks[key] === true || checks[key] === 1 || checks[key] === "1";
                     const checkIcon = passed ? '✅' : '❌';
                     const checkClass = passed ? 'check-pass' : 'check-fail';
-                    html += `<div class="compliance-check ${checkClass}"><span>${checkIcon}</span> ${label}</div>`;
+                    const tooltip = checkTooltips[key] || '';
+                    
+                    // Add info icon for quantifiable measures to indicate more details
+                    const infoIcon = key === 'has_quantifiable_measures' ? ' <span style="color: #667eea; font-weight: bold;"></span>' : '';
+                    
+                    html += `<div class="compliance-check ${checkClass}" title="${escapeHtml(tooltip)}"><span>${checkIcon}</span> ${label}${infoIcon}</div>`;
                 }
                 html += '</div>';
                 

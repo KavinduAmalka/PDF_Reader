@@ -94,29 +94,29 @@ class SVOAnalyzer {
         $prompt .= "=== IEEE 29148 EVALUATION CRITERIA (BE REASONABLE) ===\n\n";
         
         $prompt .= "1. has_modal_verb (PASS if has: shall/should/may/must/will/can):\n";
-        $prompt .= "   - TRUE: Contains any modal verb\n";
-        $prompt .= "   - FALSE: No modal verb present\n\n";
-        
-        $prompt .= "2. correct_modal_verb (PASS if uses IEEE-preferred verbs):\n";
-        $prompt .= "   - TRUE: Uses 'shall' (mandatory), 'should' (recommended), or 'may' (optional)\n";
-        $prompt .= "   - FALSE: Uses non-preferred verbs like 'must', 'will', 'can'\n\n";
-        
-        $prompt .= "3. is_clear (PASS if understandable):\n";
-        $prompt .= "   - TRUE: Clear subject, verb, object structure; no vague terms\n";
-        $prompt .= "   - FALSE: Vague, ambiguous language; unclear what is required\n\n";
-        
-        $prompt .= "4. is_testable (PASS if can be verified):\n";
-        $prompt .= "   - TRUE: Can be tested/verified (action can be observed or measured)\n";
-        $prompt .= "   - FALSE: Subjective or impossible to verify (e.g., 'be user-friendly')\n\n";
-        
-        $prompt .= "5. is_single_requirement (PASS if atomic):\n";
-        $prompt .= "   - TRUE: Expresses ONE requirement\n";
-        $prompt .= "   - FALSE: Multiple requirements combined with 'and'/'or' (compound)\n\n";
-        
-        $prompt .= "6. is_unambiguous (PASS if no multiple interpretations):\n";
-        $prompt .= "   - TRUE: Only one clear interpretation possible\n";
-        $prompt .= "   - FALSE: Can be interpreted in multiple ways\n\n";
-        
+        $prompt .= "   - TRUE: Contains any modal verb.\n";
+        $prompt .= "   - FALSE: No modal verb present.\n\n";
+
+        $prompt .= "2. correct_modal_verb (STRICT PASS if uses IEEE-preferred verbs):\n";
+        $prompt .= "   - TRUE: Uses 'shall' (mandatory), 'should' (recommended), or 'may' (optional).\n";
+        $prompt .= "   - FALSE: Uses non-preferred verbs like 'must', 'will', 'can'. IEEE prefers 'shall' for requirements.\n\n";
+
+        $prompt .= "3. is_clear (STRICT PASS if well-structured):\n";
+        $prompt .= "   - TRUE: Active voice (e.g., 'The system shall...'), clear Subject-Verb-Object (SVO) structure, no vague pronouns like 'it' or 'this'.\n";
+        $prompt .= "   - FALSE: Passive voice (e.g., 'The file shall be uploaded...'), uses vague adjectives like 'user-friendly', 'fast', 'robust', or 'efficient'.\n\n";
+
+        $prompt .= "4. is_testable (STRICT PASS if outcome is binary):\n";
+        $prompt .= "   - TRUE: A tester can definitively say 'Pass' or 'Fail' based on observation or measurement.\n";
+        $prompt .= "   - FALSE: Subjective requirements (e.g., 'The system should never crash' - impossible to prove it will *never* happen, or 'The UI must look good').\n\n";
+
+        $prompt .= "5. is_single_requirement (STRICT PASS if Atomic):\n";
+        $prompt .= "   - TRUE: Defines exactly ONE action or behavior.\n";
+        $prompt .= "   - FALSE: Combined requirements using 'and', 'also', 'as well as', or 'along with' (e.g., 'The system shall login AND display the dashboard').\n\n";
+
+        $prompt .= "6. is_unambiguous (STRICT PASS if only one interpretation exists):\n";
+        $prompt .= "   - TRUE: No room for multiple meanings. Specific terms used.\n";
+        $prompt .= "   - FALSE: Uses slashes (e.g., 'User/Admin shall...'), uses 'etc.', 'and/or', or words that depend on personal opinion.\n\n";
+                
         $prompt .= "7. has_quantifiable_measures (STRICT - Check for specific measurable criteria):\n";
         $prompt .= "   - TRUE ONLY if requirement contains SPECIFIC quantifiable measures such as:\n";
         $prompt .= "     * Numeric limits: file size (e.g., '10MB max'), time (e.g., '3 seconds'), count (e.g., '5 items')\n";

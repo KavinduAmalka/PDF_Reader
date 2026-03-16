@@ -1,9 +1,15 @@
 <?php
 session_start();
 
+require_once __DIR__ . '/template_catalog.php';
+
 $uploadMessage = '';
 $uploadStatus = '';
 $uploadedFile = '';
+$supportedTemplates = getSupportedTemplates();
+$availableTemplates = array_filter($supportedTemplates, function ($template) {
+    return is_file($template['path']);
+});
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['pdfFile'])) {
     $uploadDir = 'uploads/';
@@ -223,6 +229,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['pdfFile'])) {
             color: #764ba2;
             text-decoration: underline;
         }
+
+        .template-panel {
+            margin-top: 24px;
+            padding: 20px;
+            background: #f7f8ff;
+            border: 1px solid #d9def7;
+            border-radius: 8px;
+        }
+
+        .template-panel h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .template-panel p {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+
+        .template-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .template-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 10px 16px;
+            border-radius: 6px;
+            border: 1px solid #667eea;
+            color: #667eea;
+            background: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            flex: 1 1 200px;
+        }
+
+        .template-btn:hover {
+            background: #667eea;
+            color: #fff;
+        }
+
+        .template-hint {
+            margin-top: 12px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 28px 20px;
+            }
+
+            .upload-area {
+                padding: 28px 20px;
+            }
+
+            .template-actions {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
@@ -254,6 +329,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['pdfFile'])) {
             
             <button type="submit" class="btn" id="uploadBtn" disabled>Upload and Read PDF</button>
         </form>
+
+        <?php if (!empty($availableTemplates)): ?>
+        <div class="template-panel">
+            <h2>Supported SRS Templates</h2>
+            <p>This system can analyze only the two supported SRS template formats. You can download the matching PDF template from here and upload the completed PDF for analysis.</p>
+            <div class="template-actions">
+                <?php foreach ($availableTemplates as $templateKey => $template): ?>
+                <a class="template-btn" href="download_template.php?type=<?php echo urlencode($templateKey); ?>"><?php echo htmlspecialchars($template['label']); ?></a>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endif; ?>
         
         <div class="message" id="message"></div>
         

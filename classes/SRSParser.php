@@ -18,6 +18,10 @@ class SRSParser {
      * Parse the SRS document and extract all sections
      */
     public function parse() {
+        // Remove any trailing diagram section after non-functional requirements.
+        $this->text = $this->truncateAfterNonFunctionalDiagrams($this->text);
+        $this->lines = explode("\n", $this->text);
+
         // Detect section numbering format
         $hasFunctionalAt2 = preg_match('/\b2\.\s*Functional Requirements/i', $this->text);
         $hasFunctionalAt3 = preg_match('/\b3\.\s*Functional Requirements/i', $this->text);
@@ -260,6 +264,66 @@ class SRSParser {
         });
         
         return $subsections;
+    }
+
+    /**
+     * Trim text at the first diagram heading found after non-functional requirements begin.
+     */
+    private function truncateAfterNonFunctionalDiagrams($text) {
+        $lines = explode("\n", (string) $text);
+        $captured = [];
+        $insideNonFunctional = false;
+
+        foreach ($lines as $line) {
+            $trimmed = trim($line);
+
+            if (!$insideNonFunctional && preg_match('/^(?:●\s*)?\d+\.\s*Non-Functional Requirements\b/i', $trimmed)) {
+                $insideNonFunctional = true;
+            }
+
+            if ($insideNonFunctional) {
+                $diagramPos = $this->findDiagramSectionPosition($trimmed);
+                if ($diagramPos !== false) {
+                    $prefix = trim(substr($trimmed, 0, $diagramPos));
+                    if (!empty($prefix)) {
+                        $captured[] = $prefix;
+                    }
+                    break;
+                }
+            }
+
+            $captured[] = $line;
+        }
+
+        return implode("\n", $captured);
+    }
+
+    /**
+     * Find the position of a diagram section heading in a line.
+     */
+    private function findDiagramSectionPosition($line) {
+        $line = trim($line ?? '');
+        if ($line === '') {
+            return false;
+        }
+
+        // Avoid matching requirement entries such as "NFR-01 (Type): ..."
+        if (preg_match('/^(?:●\s*)?NFR-\d+/i', $line)) {
+            // In NFR lines we still need to detect numbered section headings that appear later in the same line.
+            $inlinePattern = '/\b\d+(?:\.\d+)*\s*\.\s*(?:System\s+Diagrams?|UML\s+Diagrams?|Use\s*Case\s*Diagrams?|Class\s*Diagrams?|Sequence\s*Diagrams?|Activity\s*Diagrams?|State\s*Diagrams?|Deployment\s*Diagrams?|Data\s*Flow\s*Diagrams?|DFD|ER\s*Diagrams?|Entity\s*Relationship\s*Diagrams?|Architecture\s*Diagrams?|System\s*Architecture|Flow\s*Charts?|Flowcharts?)\b/i';
+            if (preg_match($inlinePattern, $line, $matches, PREG_OFFSET_CAPTURE)) {
+                return $matches[0][1];
+            }
+            return false;
+        }
+
+        $startPattern = '/(?:^|\s)(?:●\s*)?(?:\d+(?:\.\d+)*\s*\.\s*)?(?:System\s+Diagrams?|UML\s+Diagrams?|Use\s*Case\s*Diagrams?|Class\s*Diagrams?|Sequence\s*Diagrams?|Activity\s*Diagrams?|State\s*Diagrams?|Deployment\s*Diagrams?|Data\s*Flow\s*Diagrams?|DFD|ER\s*Diagrams?|Entity\s*Relationship\s*Diagrams?|Architecture\s*Diagrams?|System\s*Architecture|Flow\s*Charts?|Flowcharts?)\b/i';
+
+        if (preg_match($startPattern, $line, $matches, PREG_OFFSET_CAPTURE)) {
+            return $matches[0][1];
+        }
+
+        return false;
     }
     
     /**

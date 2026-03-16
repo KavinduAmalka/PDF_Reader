@@ -12,9 +12,10 @@ require_once 'classes/SRSParser.php';
 
 $pdfPath = $_SESSION['uploaded_pdf'];
 $originalFilename = $_SESSION['original_filename'] ?? 'document.pdf';
+$parserVersion = '2026-03-16-diagram-cutoff-v3-simplified';
 
 // Parse PDF if not already parsed
-if (!isset($_SESSION['srs_sections'])) {
+if (!isset($_SESSION['srs_sections']) || ($_SESSION['srs_parser_version'] ?? '') !== $parserVersion) {
     try {
         $pdfParser = new PDFParser($pdfPath);
         $text = $pdfParser->extractText();
@@ -24,6 +25,7 @@ if (!isset($_SESSION['srs_sections'])) {
         
         $_SESSION['srs_sections'] = $sections;
         $_SESSION['pdf_text'] = $text;
+        $_SESSION['srs_parser_version'] = $parserVersion;
     } catch (Exception $e) {
         $_SESSION['parse_error'] = $e->getMessage();
     }
@@ -32,6 +34,9 @@ if (!isset($_SESSION['srs_sections'])) {
 $sections = $_SESSION['srs_sections'] ?? [];
 $parseError = $_SESSION['parse_error'] ?? null;
 $pdfText = $_SESSION['pdf_text'] ?? '';
+$hasOverallDescription = !empty($sections['header']['overall_description']);
+$functionalSectionNumber = $hasOverallDescription ? 3 : 2;
+$nonFunctionalSectionNumber = $hasOverallDescription ? 4 : 3;
 
 // Get selected section from query parameter
 $selectedSection = $_GET['section'] ?? 'all';
@@ -866,7 +871,7 @@ $debugMode = isset($_GET['debug']) && $_GET['debug'] === '1';
 
                 <?php if ($selectedSection === 'all' || $selectedSection === 'functional'): ?>
                     <div class="section-block">
-                        <h3>2. Functional Requirements</h3>
+                        <h3><?php echo $functionalSectionNumber; ?>. Functional Requirements</h3>
                         
                         <?php 
                         $frSubsections = $sections['subsections']['functional'] ?? [];
@@ -938,7 +943,7 @@ $debugMode = isset($_GET['debug']) && $_GET['debug'] === '1';
 
                 <?php if ($selectedSection === 'all' || $selectedSection === 'non_functional'): ?>
                     <div class="section-block">
-                        <h3>3. Non-Functional Requirements</h3>
+                        <h3><?php echo $nonFunctionalSectionNumber; ?>. Non-Functional Requirements</h3>
                         
                         <?php 
                         $nfrSubsections = $sections['subsections']['non_functional'] ?? [];

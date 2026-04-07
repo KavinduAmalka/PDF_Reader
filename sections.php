@@ -763,6 +763,8 @@ $debugMode = isset($_GET['debug']) && $_GET['debug'] === '1';
             </div>
             <div class="header-buttons">
                 <a href="viewer.php" class="btn">Original PDF</a>
+                <a href="uat_test_cases_enhanced.php" class="btn">🧪 UAT Testing (Enhanced)</a>
+                <a href="uat_results.php" class="btn">📈 Results</a>
                 <a href="index.php" class="btn">Upload New</a>
             </div>
         </div>
@@ -777,6 +779,15 @@ $debugMode = isset($_GET['debug']) && $_GET['debug'] === '1';
                 <li><a href="?section=introduction" class="<?php echo $selectedSection === 'introduction' ? 'active' : ''; ?>">Introduction</a></li>
                 <li><a href="?section=functional" class="<?php echo $selectedSection === 'functional' ? 'active' : ''; ?>">Functional Requirements</a></li>
                 <li><a href="?section=non_functional" class="<?php echo $selectedSection === 'non_functional' ? 'active' : ''; ?>">Non-Functional Requirements</a></li>
+            </ul>
+            <hr style="margin: 15px 0; border: none; border-top: 1px solid #eee;">
+            <h3 style="color: #667eea; font-size: 14px;">🧪 UAT Testing (Consolidated)</h3>
+            <ul class="nav-menu">
+                <li><a href="uat_test_cases_enhanced.php"><strong>📋 Test Cases (3-4 per requirement)</strong></a></li>
+                <li><a href="uat_test_execution.php">▶ Execute Tests</a></li>
+                <li><a href="uat_results.php">📊 View Results</a></li>
+                <li><a href="uat_reports.php">📄 Generate Reports</a></li>
+                <li style="background: #e8f5e9; border-radius: 3px; margin-top: 8px; padding: 10px; border-left: 3px solid #4CAF50;"><small style="color: #2e7d32;"><strong>✓ Integrated:</strong> Expert QA features now part of main UAT Testing Module</small></li>
             </ul>
             <hr style="margin: 15px 0; border: none; border-top: 1px solid #eee;">
             <h3 style="color: #ff9800; font-size: 14px;">Debug</h3>

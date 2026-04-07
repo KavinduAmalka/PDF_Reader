@@ -1,0 +1,326 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                    🎯 EXPERT QA TEST CASE GENERATOR                             ║
+║                      Quick Start Reference Guide                                ║
+║                                                                                  ║
+║        Expert-Level Test Case Generation for Every SRS Requirement              ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+📋 QUICK FACTS
+═════════════════════════════════════════════════════════════════════════════════
+✓ Auto-generates 3-4 test cases per requirement
+✓ Covers all FR and NFR requirements (100% coverage)
+✓ Creates Positive, Negative, Edge Case, and Performance tests
+✓ Exports as JSON or CSV for tool integration
+✓ Smart persona extraction from requirement text
+✓ Professional test documentation format
+
+🚀 GETTING STARTED IN 3 STEPS
+═════════════════════════════════════════════════════════════════════════════════
+
+STEP 1: Upload & Parse PDF
+─────────────────────────
+1. Go to home page (index.php)
+2. Upload your SRS PDF document
+3. Wait for parsing to complete
+4. You'll see the Sections page with requirements
+
+STEP 2: Generate Test Cases
+──────────────────────────
+Option A - From Sections Page Header:
+   → Click "📊 Expert QA Test Cases" button
+
+Option B - From Sidebar Menu:
+   → Click "🎯 Expert QA Test Cases" link
+
+Option C - Direct URL:
+   → http://localhost/PDF_Reader/uat_comprehensive_test_cases.php
+
+STEP 3: View, Filter & Export
+───────────────────────────────
+✓ See all test cases auto-generated from requirements
+✓ Filter by requirement type (FR/NFR)
+✓ Filter by test type (Positive/Negative/Edge/Performance)
+✓ Search by keyword
+✓ Export as JSON or CSV
+
+📊 WHAT YOU'LL SEE
+═════════════════════════════════════════════════════════════════════════════════
+
+Dashboard Statistics:
+┌─────────────────────────────────────────────────────────────────┐
+│ Total Requirements        50                                     │
+│ Total Test Cases         200  (4 per requirement)               │
+│ Functional (FR)           35                                     │
+│ Non-Functional (NFR)      15  (with Performance tests)          │
+└─────────────────────────────────────────────────────────────────┘
+
+Test Case Cards by Requirement:
+┌─────────────────────────────────────────────────────────────────┐
+│ FR-20.01 (4 test cases)                                          │
+│ ├─ [✅ POSITIVE] Author Registers and Pays                      │
+│ ├─ [❌ NEGATIVE] Invalid Payment Rejected                        │
+│ ├─ [🔄 EDGE CASE] Payment at Deadline                          │
+│ └─ [🔀 ALTERNATE] Multiple Co-authors Registration             │
+│                                                                  │
+│ NFR-02 (4 test cases)                                            │
+│ ├─ [✅ POSITIVE] Track Merge Succeeds                          │
+│ ├─ [❌ NEGATIVE] Invalid Track Data Rejected                     │
+│ ├─ [🔄 EDGE CASE] Merge with Max Data                          │
+│ └─ [⚡ PERFORMANCE] Merge Completes in 6 Minutes               │
+└─────────────────────────────────────────────────────────────────┘
+
+🎯 TEST CASE TYPES EXPLAINED
+═════════════════════════════════════════════════════════════════════════════════
+
+✅ POSITIVE Test (TC_001)
+   What: Happy path execution
+   Tests: "What should happen when everything is correct?"
+   Example: Author successfully uploads camera-ready file
+   Status: 00% system works as designed
+
+❌ NEGATIVE Test (TC_002)
+   What: Error handling
+   Tests: "How does system handle invalid input?"
+   Example: Author uploads wrong file format
+   Status: System rejects gracefully with error message
+
+🔄 EDGE CASE Test (TC_003)
+   What: Boundary conditions
+   Tests: "What happens at system limits?"
+   Example: Upload exactly at deadline, concurrent users
+   Status: System handles limits, no overflow/timeout
+
+⚡ PERFORMANCE Test (TC_004) - NFRs only
+   What: Performance validation
+   Tests: "Does system meet speed/load requirements?"
+   Example: 4-track merge completes in ≤6 minutes
+   Status: Response time, throughput, resource use
+
+🔀 ALTERNATE FLOW Test (TC_004) - FRs only
+   What: Workflow variations
+   Tests: "Other paths through the requirement?"
+   Example: Email sent to all co-authors on upload
+   Status: Different actors, status updates, notifications
+
+📥 EXPORTING TEST CASES
+═════════════════════════════════════════════════════════════════════════════════
+
+JSON Format - For Tool Integration
+──────────────────────────────────
+✓ Best for: QA tools, APIs, automated testing frameworks
+✓ Contains: All metadata, test structure, test data
+✓ Use case: Import into TestRail, Jira, Azure Test Plans
+✓ Size: ~50-100KB for 50 requirements
+
+CSV Format - For Spreadsheet Analysis
+──────────────────────────────────────
+✓ Best for: Excel, Google Sheets, reporting
+✓ Contains: Tabular format with all key fields
+✓ Use case: Manual tracking, stakeholder reports
+✓ Columns: Req ID, Test ID, Type, Description, Persona, Priority
+
+How to Export:
+1. Click "📥 Export" button
+2. Choose format (JSON or CSV)
+3. Click "Export"
+4. File downloads to your computer
+
+🔍 FILTERING & SEARCHING
+═════════════════════════════════════════════════════════════════════════════════
+
+Filter by Requirement Type:
+┌──────────────────────────────────────────────┐
+│ All Requirements    → FR + NFR tests          │
+│ Functional (FR)     → Only feature tests      │
+│ Non-Functional (NFR) → Only quality tests     │
+└──────────────────────────────────────────────┘
+
+Filter by Test Type:
+┌──────────────────────────────────────────────┐
+│ All Types           → All test types          │
+│ Positive            → Happy path only         │
+│ Negative            → Error scenarios only    │
+│ Edge Case           → Boundary tests only     │
+│ Performance         → Performance tests only  │
+│ Alternate Flow      → Alternate paths only    │
+└──────────────────────────────────────────────┘
+
+Search Examples:
+───────────────
+"upload"     → Find all upload-related tests
+"email"      → Find all email notification tests
+"FR-20"      → Find tests for requirement FR-20
+"payment"    → Find all payment processing tests
+"deadline"   → Find deadline/timing tests
+
+🏗️ TEST CASE STRUCTURE
+═════════════════════════════════════════════════════════════════════════════════
+
+Each test case includes:
+
+Identification:
+  • Test ID: FR-20.01_TC_001 (maps to requirement + test number)
+  • Requirement ID: FR-20.01 (SRS mapping)
+  • Test Name: [POSITIVE] Author Registers and Pays
+  • Test Type: Positive, Negative, Edge Case, Performance, or Alternate
+
+Context:
+  • Description: What this test verifies
+  • User Persona: Author, Manager, Admin, System, etc.
+  • Priority: P0 (Critical), P1 (High), P2 (Medium)
+
+Execution:
+  • Pre-conditions: "Author logged in, payment method configured"
+  • Test Steps: 1. Author navigates.. 2. System.. 3. Author..
+  • Expected Result: "Payment processed, confirmation sent"
+
+Validation:
+  • Acceptance Criteria: Checkable success criteria
+  • Test Data: Sample input values (email, file, amount)
+  • Automation Ready: Yes/No flag
+
+📈 TYPICAL USAGE WORKFLOW
+═════════════════════════════════════════════════════════════════════════════════
+
+1. PREPARE
+   ├─ Upload SRS PDF
+   ├─ Wait for parsing
+   └─ Navigate to Expert QA Test Cases page
+
+2. GENERATE
+   ├─ Auto-generates 4 tests per requirement
+   ├─ Smart persona/action extraction
+   └─ Professional structure & formatting
+
+3. ANALYZE
+   ├─ Review test details
+   ├─ Filter by type or requirement
+   ├─ Search for specific tests
+   └─ Verify coverage
+
+4. EXPORT
+   ├─ Choose JSON or CSV
+   ├─ Download file
+   └─ Import into your test management system
+
+5. EXECUTE
+   ├─ Use test cases for manual testing
+   ├─ Automate in your framework
+   ├─ Track execution results
+   └─ Update test status
+
+6. REPORT
+   ├─ Calculate coverage %
+   ├─ Report pass/fail rates
+   ├─ Document blockers
+   └─ Plan retesting
+
+✅ REQUIREMENTS COVERAGE
+═════════════════════════════════════════════════════════════════════════════════
+
+100% Requirement Coverage
+Each requirement gets:
+  ✓ Positive test (happy path)
+  ✓ Negative test (error scenarios)
+  ✓ Edge case test (boundary conditions)
+  ✓ Performance/Alternate test (for NFR/FR)
+
+Coverage by Test Type:
+  ✓ Happy Path: 25% (1 per requirement)
+  ✓ Error Cases: 25% (1 per requirement)
+  ✓ Boundary Tests: 25% (1 per requirement)
+  ✓ Performance/Alternate: 25% (1 per requirement)
+
+Example Coverage for 50 Requirements:
+  Total Test Cases: 200
+  Positive Tests: 50 (happy path only)
+  Negative Tests: 50 (error handling)
+  Edge Case Tests: 50 (boundaries)
+  Performance/Alternate: 50 (NFR performance or FR flows)
+
+🔧 INTEGRATION EXAMPLES
+═════════════════════════════════════════════════════════════════════════════════
+
+Import into TestRail:
+1. Export as JSON
+2. Parse JSON file
+3. Create test cases in TestRail via API
+4. Map test IDs to requirements
+5. Track execution
+
+Import into Jira:
+1. Export as CSV
+2. Create test case issues
+3. Link to story/requirement
+4. Assign to testers
+5. Track in sprint
+
+Automate with Selenium:
+1. Export as JSON
+2. Parse test steps
+3. Generate Selenium scripts
+4. Run automated tests
+5. Report results
+
+⚠️ IMPORTANT NOTES
+═════════════════════════════════════════════════════════════════════════════════
+
+✓ Test cases are generated from parsed SRS
+✓ Quality depends on SRS content (personas, requirements must be explicit)
+✓ All tests are created for reference - use as baseline
+✓ Customize tests for your specific environment
+✓ Not all tests need to be automated (focus on critical path first)
+✓ Combine with manual testing for best coverage
+
+📞 HELP & TROUBLESHOOTING
+═════════════════════════════════════════════════════════════════════════════════
+
+No test cases show?
+→ Verify PDF was uploaded and parsed successfully
+
+Missing personas in tests?
+→ Ensure requirement text contains actor keywords (Author, Manager, Admin)
+
+Export not working?
+→ Check browser file download settings
+→ Try different export format (JSON vs CSV)
+
+Test steps look generic?
+→ Generator uses pattern matching - customize for your domain
+→ Edit exported file to add project-specific details
+
+Need more details in test cases?
+→ Export as JSON and expand in your test management tool
+→ Add custom fields (environment, browser, test data)
+
+Need help?
+→ Review EXPERT_QA_TEST_CASES_GUIDE.md for detailed documentation
+→ Check test case examples in dashboard
+→ Inspect generated test steps to understand pattern
+
+🎓 LEARNING RESOURCES
+═════════════════════════════════════════════════════════════════════════════════
+
+📖 Full Documentation:
+   → EXPERT_QA_TEST_CASES_GUIDE.md
+
+📋 Test Case Types:
+   → See "TEST CASE TYPES EXPLAINED" above
+
+🔧 Technical Details:
+   → classes/ComprehensiveTestCaseGenerator.php
+
+📊 Example Output:
+   → View dashboard and exported files
+
+═════════════════════════════════════════════════════════════════════════════════
+Ready to generate comprehensive test cases? 🚀
+
+1. Upload your SRS PDF
+2. Click "📊 Expert QA Test Cases"
+3. Review auto-generated test suite
+4. Export to your test management tool
+5. Execute and track results
+
+═════════════════════════════════════════════════════════════════════════════════
+Last Updated: April 3, 2026 | Version 1.0 | Status: Production Ready

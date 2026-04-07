@@ -47,9 +47,19 @@ $searchTerm = $_GET['search'] ?? '';
 
 // Calculate statistics
 $totalRequirements = count($groupedTestCases);
-$totalTestCases = array_sum(array_map('countAllTests', $groupedTestCases));
-$frCount = count(array_filter(array_keys($groupedTestCases), fn($k) => str_starts_with($k, 'FR-')));
-$nfrCount = count(array_filter(array_keys($groupedTestCases), fn($k) => str_starts_with($k, 'NFR-')));
+$totalTestCases = 0;
+foreach ($groupedTestCases as $group) {
+    $totalTestCases += countAllTests($group);
+}
+$frCount = 0;
+$nfrCount = 0;
+foreach (array_keys($groupedTestCases) as $key) {
+    if (strpos($key, 'FR-') === 0) {
+        $frCount++;
+    } elseif (strpos($key, 'NFR-') === 0) {
+        $nfrCount++;
+    }
+}
 
 ?>
 <!DOCTYPE html>

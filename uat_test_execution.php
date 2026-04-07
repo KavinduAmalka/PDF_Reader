@@ -48,8 +48,14 @@ foreach ($allTestCases as $code => $tests) {
 
 // Sort requirements
 uksort($parentRequirements, function($a, $b) {
+    $matchA = [];
+    $matchB = [];
     preg_match('/(FR|NFR)-(\d+)/', $a, $matchA);
     preg_match('/(FR|NFR)-(\d+)/', $b, $matchB);
+    
+    if (empty($matchA) || empty($matchB)) {
+        return 0;
+    }
     
     if ($matchA[1] !== $matchB[1]) {
         return $matchA[1] === 'FR' ? -1 : 1;

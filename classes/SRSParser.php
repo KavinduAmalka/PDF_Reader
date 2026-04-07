@@ -18,6 +18,17 @@ class SRSParser {
      * Parse the SRS document and extract all sections
      */
     public function parse() {
+        // Validate text
+        if (empty($this->text)) {
+            return [
+                'header' => [],
+                'introduction' => '',
+                'functional_requirements' => '',
+                'non_functional_requirements' => '',
+                'subsections' => ['functional' => [], 'non_functional' => []]
+            ];
+        }
+        
         // Remove any trailing diagram section after non-functional requirements.
         $this->text = $this->truncateAfterNonFunctionalDiagrams($this->text);
         $this->lines = explode("\n", $this->text);
